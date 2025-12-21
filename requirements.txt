@@ -6,3 +6,4 @@ transformers
 torch
 google-api-python-client
 gunicorn
+pandas
