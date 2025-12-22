@@ -7,3 +7,4 @@ torch>=2.5.0
 google-api-python-client
 gunicorn
 pandas
+python-dotenv
