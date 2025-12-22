@@ -3,7 +3,7 @@ plotly
 requests
 beautifulsoup4
 transformers
-torch
+torch==2.2.2+cpu
 google-api-python-client
 gunicorn
 pandas
