@@ -16,7 +16,7 @@ import os
 model_name = "ahs95/banglabert-sentiment-analysis"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
-nlp = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+nlp = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer, device=-1)
 load_dotenv()
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 # =========================
@@ -561,4 +561,4 @@ def process_link(n_clicks, link, link_type):
 # =========================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))
-    app.run(host="0.0.0.0", port=port,debug=True)
+    app.run(host="0.0.0.0", port=port)
