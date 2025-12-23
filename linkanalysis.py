@@ -16,7 +16,7 @@ import os
 model_name = "ahs95/banglabert-sentiment-analysis"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
-nlp = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer, device=-1)
+nlp = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer, device=-1 )
 load_dotenv()
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 # =========================
@@ -332,7 +332,7 @@ def comment_length_vs_sentiment(comment_results):
 # =========================
 # Dash App
 # =========================
-app = Dash(__name__)
+app = Dash(__name__, suppress_callback_exceptions=True)
 
 app.layout = html.Div([
     html.H1("Content Analysis Dashboard", style={
@@ -393,10 +393,10 @@ app.layout = html.Div([
     State("input-link", "value"),
     State("link-type", "value")
 )
+
 def process_link(n_clicks, link, link_type):
     if n_clicks == 0 or not link:
         return html.P("Please enter a link and click Process.")
-    paragraph_sentiments = paragraph_sentiment_analysis(link)
 
     # ================= NEWS =================
     if link_type == "news":
@@ -440,66 +440,30 @@ def process_link(n_clicks, link, link_type):
                 }
             ),
 
-            
-            html.Hr(),
-
-            html.H3("📑 Paragraph-wise Sentiment Analysis"),
-
-            html.Div([
-                
-                html.Div([
-                    html.P(f"🧾 Paragraph {i+1}", style={
-                        'fontWeight': 'bold',
-                        'color': '#2c3e50'
-                    }),
-
-                    html.P(ps["text"], style={
-                        'whiteSpace': 'pre-wrap'
-                    }),
-
-                    html.P(
-                        f"Sentiment: {ps['label']} | Confidence: {ps['score']}%",
-                        style={
-                            'color': 'green' if ps['label'].lower() == 'positive'
-                            else 'red' if ps['label'].lower() == 'negative'
-                            else 'orange',
-                            'fontWeight': 'bold'
-                        }
-                    ),
-
-                    html.Hr()
-                ], style={
-                    'padding': '10px',
-                    'border': '1px solid #ddd',
-                    'marginBottom': '10px',
-                    'backgroundColor': "#AC8BF80F"
-                })
-
-                for i, ps in enumerate(paragraph_sentiments)
-            ]),
-            html.Hr(),
-
-            html.H3("📈 Sentiment Flow Across Paragraphs"),
-
-            dcc.Graph(
-                figure=paragraph_sentiment_lineplot(paragraph_sentiments)
+            html.Button(
+                "🔍 Show Paragraph-wise Analysis",
+                id="para-btn",
+                n_clicks=0,
+                style={
+                    'backgroundColor': '#6a0dad',
+                    'color': '#ffffff',
+                    'border': 'none',
+                    'padding': '10px 15px',
+                    'borderRadius': '5px',
+                    'cursor': 'pointer',
+                    'marginBottom': '20px'
+                }
             ),
+
+            html.Div(id="paragraph-analysis-container"),
+
             html.Hr(),
 
             dcc.Graph(figure=top_words_figure(text)),
 
             html.H4("Sentiment Analysis"),
             dcc.Graph(figure=fig_sent),
-            html.P(
-                confidence,
-                style={
-                    'fontSize': '16px',
-                    'fontWeight': 'bold',
-                    'color': 'green'
-                }
-            ),
-
-
+            html.P(confidence, style={'fontWeight': 'bold', 'color': 'green'})
         ])
 
     # ================= FACEBOOK =================
@@ -553,7 +517,45 @@ def process_link(n_clicks, link, link_type):
             html.H3("📈 Comment Length vs Sentiment"),
             dcc.Graph(figure=fig_scatter)
         ])
+@app.callback(
+    Output("paragraph-analysis-container", "children"),
+    Input("para-btn", "n_clicks"),
+    State("input-link", "value"),
+    prevent_initial_call=True
+)
+def load_paragraph_analysis(n_clicks, link):
+    if not link:
+        return html.P("No link provided.")
 
+    paragraph_sentiments = paragraph_sentiment_analysis(link)
+
+    if not paragraph_sentiments:
+        return html.P("No paragraph sentiment data found.")
+
+    return html.Div([
+        html.H3("📑 Paragraph-wise Sentiment Analysis"),
+
+        html.Div([
+            html.Div([
+                html.P(f"🧾 Paragraph {i+1}", style={'fontWeight': 'bold'}),
+                html.P(ps["text"]),
+                html.P(
+                    f"Sentiment: {ps['label']} | {ps['score']}%",
+                    style={'fontWeight': 'bold'}
+                ),
+                html.Hr()
+            ], style={
+                'padding': '10px',
+                'border': '1px solid #ddd',
+                'marginBottom': '10px'
+            })
+            for i, ps in enumerate(paragraph_sentiments)
+        ]),
+
+        dcc.Graph(
+            figure=paragraph_sentiment_lineplot(paragraph_sentiments)
+        )
+    ])
 
 
 # =========================
