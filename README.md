@@ -36,12 +36,12 @@ YOUTUBE_API_KEY=YOUR_YOUTUBE_API_KEY
 
 
 Run the app:
-python content_analysis.py
+python linkanalysis.py
 
 Open your browser at http://127.0.0.1:8050.
 
-**Steps on the dashboard:**
- -Select the type of link: News, Facebook, or YouTube.
- -Enter the URL in the input box.
- -Click Process to analyze content.
- -For news articles, optionally click Show Paragraph-wise Analysis to see paragraph sentiment transition.
+- **Steps on the dashboard:**
+  -Select the type of link: News, Facebook, or YouTube.
+  -Enter the URL in the input box.
+  -Click Process to analyze content.
+  -For news articles, optionally click Show Paragraph-wise Analysis to see paragraph sentiment transition.
