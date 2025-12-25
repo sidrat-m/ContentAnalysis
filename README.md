@@ -41,6 +41,7 @@ python linkanalysis.py
 Open your browser at http://127.0.0.1:8050.
 
 - **Steps on the dashboard:**
+- 
   -Select the type of link: News, Facebook, or YouTube.
   
   -Enter the URL in the input box.
